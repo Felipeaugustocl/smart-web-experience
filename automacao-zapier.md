@@ -1,5 +1,7 @@
 # Automação no Zapier (formulário → IA → planilha → e-mail)
 
+Eu montei este Zap para receber pedidos de orçamento da Luminus, usar IA para analisar as informações, salvar tudo em uma planilha e enviar uma resposta por e-mail.
+
 Zap: **Luminus | Pedido de orçamento com IA**
 
 ```
@@ -11,14 +13,16 @@ Webflow (webhook de envio de formulário)
 ```
 
 ## Passo 1: gatilho
-- App: **Webhooks by Zapier**, evento **Catch Hook**
-- No Webflow cadastrei um webhook do tipo `form_submission` apontando pra URL que o Zapier gerou. Assim todo pedido do formulário vai direto pro Zap.
-- Por que não usei o gatilho "Webflow > New Form Submission": ele só mostrava um exemplo genérico ("Joe Bloggs", só nome e e-mail) e não puxava os campos que eu fiz em HTML. Com o webhook chegam todos os campos.
 
-Campos que chegam (dentro de `payload.data`): `Name`, `Email`, `WhatsApp`, `Aparelho`, `Servico`, `Descricao`, `Triagem do site`, e também `payload.submittedAt` com a data.
+- App: **Webhooks by Zapier**, evento **Catch Hook**
+- No Webflow, eu cadastrei um webhook do tipo `form_submission` e apontei para a URL gerada pelo Zapier. Assim, cada pedido enviado pelo formulário vai direto para o Zap.
+- Eu não usei o gatilho "Webflow > New Form Submission" porque ele só mostrava um exemplo genérico ("Joe Bloggs", apenas nome e e-mail). Ele também não puxava os campos que eu criei em HTML. Com o webhook, todos os campos chegam corretamente.
+
+Os campos chegam dentro de `payload.data`: `Name`, `Email`, `WhatsApp`, `Aparelho`, `Servico`, `Descricao`, `Triagem do site`. Também chega `payload.submittedAt`, que traz a data.
 
 ## Passo 2: AI by Zapier
-Usei o passo de IA do próprio Zapier. A vantagem é que nele dá pra definir os campos de saída, então a IA já devolve tudo separado e não precisei de código pra tratar a resposta. Também não precisei criar chave de API nenhuma.
+
+Neste passo, eu usei a ferramenta de IA do próprio Zapier. Gostei dessa opção porque dá para definir os campos de saída. Desse jeito, a IA já devolve cada informação separada, e eu não precisei escrever código para tratar a resposta. Também não precisei criar nenhuma chave de API.
 
 **Campos de saída** (todos obrigatórios):
 
@@ -50,12 +54,14 @@ Descrição do cliente: {Payload Data Descricao}
 ```
 
 ## Passo 3: Google Sheets
+
 - Evento: **Create Spreadsheet Row**
 - Planilha: **Luminus - Pedidos de orçamento**, aba `Pedidos`
-- Cada coluna recebe o campo do webhook com o mesmo nome; as três últimas recebem `categoria`, `urgencia` e `resposta` do passo de IA
+- Eu configurei cada coluna para receber o campo do webhook com o mesmo nome. As três últimas colunas recebem `categoria`, `urgencia` e `resposta` do passo de IA.
 - Colunas (linha 1): `Data | Nome | Email | WhatsApp | Aparelho | Servico | Descricao | Triagem do site | Categoria IA | Urgencia IA | Resposta enviada`
 
 ## Passo 4: Gmail
+
 - Evento: **Send Email**
 - Para: `{Payload Data Email}`
 - Assunto: `Luminus | Recebemos seu pedido de orçamento`
@@ -63,15 +69,16 @@ Descrição do cliente: {Payload Data Descricao}
 - Nome do remetente: `Luminus Assistência Técnica`
 
 ## Teste
-1. Enviar um pedido pelo site
-2. Ver o Zap rodar no histórico (Zap history)
-3. Conferir a linha nova na planilha e o e-mail na caixa de entrada
+
+1. Eu enviei um pedido pelo site.
+2. Verifiquei o Zap rodando no histórico (Zap history).
+3. Conferi a nova linha na planilha e o e-mail na caixa de entrada.
 
 ## Resultado do teste
 
-Teste final feito pelo próprio site (assistente → "Bateria fraca" → formulário): o Webflow mandou o webhook, o Zap rodou os 4 passos e a IA classificou como **Troca de bateria / urgência média**.
+No teste final, feito pelo próprio site (assistente → "Bateria fraca" → formulário), o Webflow enviou o webhook, o Zap executou os 4 passos e a IA classificou o pedido como **Troca de bateria / urgência média**.
 
-Nos testes anteriores, a IA classificou "Deixei cair na piscina e agora a tela não acende" como **Aparelho molhado / urgência alta** e "notebook lento, esquenta demais, ventoinha faz barulho" como **Limpeza e pasta térmica / urgência baixa**. As duas linhas foram pra planilha e os e-mails foram enviados.
+Nos testes anteriores, a IA classificou "Deixei cair na piscina e agora a tela não acende" como **Aparelho molhado / urgência alta**. Também classificou "notebook lento, esquenta demais, ventoinha faz barulho" como **Limpeza e pasta térmica / urgência baixa**. As duas linhas foram para a planilha e os e-mails foram enviados.
 
 ![Resposta da IA](prints/08-zapier-ia-resposta.png)
 ![Pedido enviado no site](prints/10-pedido-enviado.png)

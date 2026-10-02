@@ -1,8 +1,8 @@
 # Luminus Assistência Técnica
 
-Site feito no Webflow para uma assistência técnica de celular e notebook (empresa fictícia), com código próprio em HTML, CSS e JavaScript e uma automação com IA no Zapier.
+Eu fiz este site no Webflow para uma assistência técnica de celular e notebook, que é uma empresa fictícia. Usei código próprio em HTML, CSS e JavaScript e também criei uma automação com IA no Zapier.
 
-Trabalho da disciplina **Padrões Web para No Code e Low Code** (UniFECAF).
+Este é o trabalho da disciplina **Padrões Web para No Code e Low Code** (UniFECAF).  
 Aluno: Felipe Augusto Camargo Laosa
 
 - Site publicado: https://unifecaf-trabalho.webflow.io
@@ -12,17 +12,17 @@ Aluno: Felipe Augusto Camargo Laosa
 
 ## O problema
 
-A Luminus é uma loja pequena de bairro que só tinha Instagram. Todo cliente mandava mensagem perguntando a mesma coisa ("quanto fica pra trocar a tela?", "vocês consertam notebook?") e o dono passava o dia respondendo direct. Quem não recebia resposta rápido ia pra outra loja.
+Para este trabalho, imaginei a Luminus como uma loja pequena de bairro que só tinha Instagram. Os clientes sempre mandavam mensagens perguntando a mesma coisa, como "quanto fica pra trocar a tela?" e "vocês consertam notebook?". Com isso, o dono passava boa parte do dia respondendo direct. Quando alguém não recebia uma resposta rápida, acabava procurando outra loja.
 
-A ideia foi criar um site que já responde o básico na hora e organiza os pedidos de orçamento sozinho, sem precisar de programador fixo e sem gastar com servidor.
+Minha ideia foi criar um site que respondesse as dúvidas mais básicas na hora e organizasse os pedidos de orçamento sozinho. Eu também quis fazer isso sem depender de um programador fixo e sem gastar com servidor.
 
 ## O que o site faz
 
 - Mostra os 6 serviços principais com faixa de preço e prazo
-- **Assistente de triagem**: a pessoa escreve o problema do jeito dela ("deixei cair na piscina") e o site mostra na hora qual serviço é, quanto custa mais ou menos, o prazo, a urgência e uma dica do que fazer agora
-- Botão "Quero o orçamento disso", que leva pro formulário com os campos já preenchidos
-- Formulário de orçamento que dispara uma automação: a IA do Zapier lê o pedido, classifica a urgência, escreve uma resposta e manda por e-mail pro cliente, e o pedido vai pra uma planilha
-- Mostra se a loja está aberta ou fechada no momento (pelo horário de Brasília)
+- **Assistente de triagem**: a pessoa escreve o problema do jeito dela, como "deixei cair na piscina", e o site mostra na hora qual serviço pode ser, quanto custa mais ou menos, o prazo, a urgência e uma dica do que fazer agora
+- Botão "Quero o orçamento disso", que leva para o formulário com os campos já preenchidos
+- Formulário de orçamento que dispara uma automação: a IA do Zapier lê o pedido, classifica a urgência, escreve uma resposta e manda por e-mail para o cliente, enquanto o pedido vai para uma planilha
+- Mostra se a loja está aberta ou fechada no momento, usando o horário de Brasília
 - Perguntas frequentes que abrem e fecham
 - Botão flutuante do WhatsApp com mensagem pronta
 - Layout que funciona no celular, tablet e computador
@@ -42,7 +42,7 @@ A ideia foi criar um site que já responde o básico na hora e organiza os pedid
 
 ## Personalizações com código
 
-O Webflow monta a estrutura visual (seções, cards, textos, menu, rodapé, formulário). Em cima disso coloquei 5 blocos de código (Code Embed), que estão na pasta [`codigo-personalizado/`](codigo-personalizado):
+O Webflow monta a estrutura visual, como seções, cards, textos, menu, rodapé e formulário. A partir dessa estrutura, eu coloquei 5 blocos de código (Code Embed), que estão na pasta [`codigo-personalizado/`](codigo-personalizado):
 
 | Arquivo | Onde fica | O que faz |
 |---|---|---|
@@ -52,17 +52,17 @@ O Webflow monta a estrutura visual (seções, cards, textos, menu, rodapé, form
 | `4-scripts-gerais.html` | fim da página | Status aberto/fechado com `Intl.DateTimeFormat`, animação com `IntersectionObserver`, botão do WhatsApp, máscara do telefone, ano no rodapé |
 | `5-campos-formulario.html` | dentro do formulário | Campos WhatsApp, Aparelho, Serviço e Descrição feitos na mão, mais um campo escondido com a triagem do assistente |
 
-Algumas coisas que precisei fazer em código porque o Webflow não deixava (ou deixava só no plano pago):
+Algumas partes precisaram ser feitas em código porque o Webflow não permitia fazer isso no plano grátis, ou só oferecia a opção no plano pago:
 
-- O plano grátis não deixa colocar código no `<head>` nem mudar o idioma da página, então isso foi pro primeiro embed
+- O plano grátis não deixa colocar código no `<head>` nem mudar o idioma da página, então eu coloquei isso no primeiro embed
 - O painel de estilos não aceita `@keyframes` nem `prefers-reduced-motion`
-- Os campos que criei pelo painel saíam no site com nome "Field 3" e texto "Example Text", então refiz esses campos em HTML dentro do formulário
+- Os campos que eu criei pelo painel apareciam no site com o nome "Field 3" e o texto "Example Text", então refiz esses campos em HTML dentro do formulário
 
 ## Recurso inteligente
 
-São duas partes.
+Eu dividi o recurso inteligente em duas partes.
 
-**1. Triagem no próprio site (JavaScript).** Funciona na hora e sem internet lenta atrapalhar. Testei com 10 frases diferentes e ele acertou as 10 (depois de corrigir "estufou", que no começo ele não reconhecia).
+**1. Triagem no próprio site (JavaScript).** Ela funciona na hora, sem depender de uma internet rápida. Testei com 10 frases diferentes e o assistente acertou as 10. Antes disso, precisei corrigir o caso de "estufou", que no começo não era reconhecido.
 
 **2. Automação com IA (Zapier).** Quando alguém envia o formulário:
 
@@ -71,11 +71,11 @@ Webflow (webhook do formulário) → Webhooks by Zapier → AI by Zapier (classi
    → Google Sheets (salva o pedido) → Gmail (manda a resposta pro cliente)
 ```
 
-No passo de IA eu defini três campos de saída (`categoria`, `urgencia` e `resposta`), assim a IA já devolve tudo separado e os próximos passos usam direto.
+No passo de IA, eu defini três campos de saída (`categoria`, `urgencia` e `resposta`). Assim, a IA já devolve cada informação separada, e os próximos passos conseguem usar esses dados diretamente.
 
 O passo a passo completo, com o prompt, está em [`automacao-zapier.md`](automacao-zapier.md).
 
-No teste, a IA classificou "Deixei cair na piscina e agora a tela não acende" como aparelho molhado com urgência alta e escreveu o e-mail abaixo. O pedido foi salvo na planilha junto com a classificação.
+No teste, a IA classificou "Deixei cair na piscina e agora a tela não acende" como aparelho molhado com urgência alta e escreveu o e-mail abaixo. O pedido também foi salvo na planilha junto com a classificação.
 
 ![Resposta da IA no Zapier](prints/08-zapier-ia-resposta.png)
 
@@ -84,7 +84,7 @@ No teste, a IA classificou "Deixei cair na piscina e agora a tela não acende" c
 ![Planilha com os pedidos](prints/09-planilha-pedidos.png)
 _A linha 4 veio de um pedido real feito no site: o assistente indicou troca de bateria e a IA do Zapier marcou urgência média._
 
-Pensei em chamar uma IA direto do JavaScript do site, mas pra isso a chave da API ia ficar no código-fonte da página e qualquer pessoa conseguiria ver. Com a IA rodando dentro do Zapier não tem chave exposta.
+Eu cheguei a pensar em chamar uma IA diretamente pelo JavaScript do site. O problema é que a chave da API ficaria no código-fonte da página e qualquer pessoa poderia vê-la. Com a IA rodando dentro do Zapier, a chave não fica exposta.
 
 ## Prints
 
@@ -111,13 +111,13 @@ _Formulário já preenchido depois de clicar em "Quero o orçamento disso"_
    - ou clique em um dos exemplos prontos
 3. Clique em **Quero o orçamento disso** e veja o formulário preenchido
 4. Coloque nome, e-mail de verdade e WhatsApp e envie
-5. Em alguns minutos chega um e-mail com a resposta escrita pela IA (pode cair no spam)
+5. Em alguns minutos chega um e-mail com a resposta escrita pela IA, mas ele pode cair no spam
 
-Também dá pra testar a responsividade diminuindo a janela ou abrindo no celular, e a acessibilidade navegando só com a tecla Tab.
+Também dá pra testar a responsividade diminuindo a janela do navegador ou abrindo o site no celular. Para testar a acessibilidade, dá para navegar usando somente a tecla Tab.
 
 ## Lighthouse (celular)
 
-Rodei o Lighthouse no site publicado, simulando celular. Na primeira vez a acessibilidade deu 97 por causa do contraste do texto amarelo pequeno em cima dos títulos. Escureci a cor (de `#9a6d00` pra `#7a5600`) e rodei de novo:
+Eu rodei o Lighthouse no site publicado, simulando um celular. Na primeira vez, a acessibilidade ficou em 97 por causa do contraste do texto amarelo pequeno em cima dos títulos. Eu escureci a cor, de `#9a6d00` para `#7a5600`, e rodei o teste novamente:
 
 | Desempenho | Acessibilidade | Boas práticas | SEO |
 |---|---|---|---|
@@ -128,7 +128,7 @@ Rodei o Lighthouse no site publicado, simulando celular. Na primeira vez a acess
 ## Estrutura da pasta
 
 ```
-projeto/
+smart-web-experience/
 ├── README.md
 ├── automacao-zapier.md         passo a passo do Zap
 ├── codigo-personalizado/       os 5 embeds colocados no Webflow
@@ -138,8 +138,8 @@ projeto/
 
 ## Limitações
 
-- É uma empresa fictícia, então os preços, depoimentos e o endereço são inventados
+- Eu usei uma empresa fictícia, então os preços, depoimentos e o endereço são inventados
 - O plano grátis do Webflow mostra o selo "Made in Webflow" e tem limite de 50 envios de formulário
 - O gatilho pronto "Webflow" do Zapier não puxava os campos que fiz em HTML, então troquei por um webhook do Webflow ligado no "Webhooks by Zapier"
-- A triagem do site é por palavras-chave, então se a pessoa escrever algo muito diferente ele cai em "Diagnóstico na loja"
+- A triagem do site funciona por palavras-chave, então, se a pessoa escrever algo muito diferente, o resultado cai em "Diagnóstico na loja"
 - O botão do WhatsApp não tem número porque a loja não existe
