@@ -1,0 +1,74 @@
+<!-- Embed 1: fica logo no começo do body da Home -->
+<!-- Coloquei aqui o que o painel do Webflow não deixa fazer (ou que ficou mais fácil escrever na mão) -->
+<script>
+  // marca que o JS está ligado (as animações só escondem os blocos se o JS funcionar)
+  document.documentElement.classList.add('js');
+  // o plano grátis do Webflow não deixa mudar o idioma da página, então coloco aqui pro leitor de tela ler em português
+  document.documentElement.lang = 'pt-BR';
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
+<a href="#conteudo" class="lm-pular">Pular para o conteúdo</a>
+<style>
+  /* cores da marca em variáveis, assim se mudar a cor muda em tudo */
+  :root {
+    --tinta: #12172b;
+    --luz: #ffc53d;
+    --luz-forte: #e9a800;
+    --papel: #f7f5ef;
+    --texto: #1d2236;
+    --suave: #565c71;
+    --borda: #e2ded3;
+    --verde: #1d7a46;
+    --vermelho: #b42318;
+  }
+  html { scroll-behavior: smooth; }
+  body { font-family: Inter, system-ui, sans-serif; color: var(--texto); background: var(--papel); }
+  h1, h2, h3, .lm-logo, .lm-rodape-logo { font-family: Outfit, system-ui, sans-serif; }
+  /* o menu fixo tapava o título quando clicava num link do menu */
+  section[id] { scroll-margin-top: 80px; }
+
+  /* foco bem visível pra quem navega só com o teclado */
+  a:focus-visible, button:focus-visible, input:focus-visible,
+  select:focus-visible, textarea:focus-visible, summary:focus-visible {
+    outline: 3px solid var(--luz-forte);
+    outline-offset: 3px;
+  }
+
+  /* link escondido que aparece quando aperta Tab */
+  .lm-pular {
+    position: absolute; left: -9999px; top: 8px; z-index: 1000;
+    background: var(--tinta); color: #fff; padding: 10px 16px; border-radius: 8px;
+  }
+  .lm-pular:focus { left: 8px; }
+
+  /* animação dos blocos aparecendo quando rola a página (o JS coloca a classe .visivel) */
+  @keyframes lm-subir {
+    from { opacity: 0; transform: translateY(18px); }
+    to { opacity: 1; transform: none; }
+  }
+  .js .lm-revela { opacity: 0; }
+  .js .lm-revela.visivel { animation: lm-subir .6s ease-out forwards; }
+
+  /* se a pessoa pediu menos animação no sistema, respeita */
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .js .lm-revela { opacity: 1; }
+    .js .lm-revela.visivel { animation: none; }
+  }
+
+  /* menu com rolagem lateral no celular, sem barra aparecendo */
+  .lm-menu { scrollbar-width: none; }
+  .lm-menu::-webkit-scrollbar { display: none; }
+
+  /* botão flutuante do WhatsApp (criado pelo JS) */
+  .lm-zap {
+    position: fixed; right: 18px; bottom: 64px; z-index: 50; /* 64px pra não ficar em cima do selo do Webflow */
+    display: flex; align-items: center; gap: 8px;
+    background: #1f9d55; color: #fff; text-decoration: none; font-weight: 600;
+    padding: 12px 18px; border-radius: 999px; box-shadow: 0 6px 18px rgba(0,0,0,.18);
+  }
+  .lm-zap:hover { background: #17834a; }
+  @media (max-width: 479px) { .lm-zap span { display: none; } .lm-zap { padding: 14px; } }
+</style>

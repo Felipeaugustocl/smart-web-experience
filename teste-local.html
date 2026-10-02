@@ -1,0 +1,476 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Teste local dos embeds</title>
+</head>
+<body>
+<!-- Página que usei pra testar os códigos no navegador antes de colar no Webflow -->
+<!-- Embed 1: fica logo no começo do body da Home -->
+<!-- Coloquei aqui o que o painel do Webflow não deixa fazer (ou que ficou mais fácil escrever na mão) -->
+<script>
+  // marca que o JS está ligado (as animações só escondem os blocos se o JS funcionar)
+  document.documentElement.classList.add('js');
+  // o plano grátis do Webflow não deixa mudar o idioma da página, então coloco aqui pro leitor de tela ler em português
+  document.documentElement.lang = 'pt-BR';
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
+<a href="#conteudo" class="lm-pular">Pular para o conteúdo</a>
+<style>
+  /* cores da marca em variáveis, assim se mudar a cor muda em tudo */
+  :root {
+    --tinta: #12172b;
+    --luz: #ffc53d;
+    --luz-forte: #e9a800;
+    --papel: #f7f5ef;
+    --texto: #1d2236;
+    --suave: #565c71;
+    --borda: #e2ded3;
+    --verde: #1d7a46;
+    --vermelho: #b42318;
+  }
+  html { scroll-behavior: smooth; }
+  body { font-family: Inter, system-ui, sans-serif; color: var(--texto); background: var(--papel); }
+  h1, h2, h3, .lm-logo, .lm-rodape-logo { font-family: Outfit, system-ui, sans-serif; }
+  /* o menu fixo tapava o título quando clicava num link do menu */
+  section[id] { scroll-margin-top: 80px; }
+
+  /* foco bem visível pra quem navega só com o teclado */
+  a:focus-visible, button:focus-visible, input:focus-visible,
+  select:focus-visible, textarea:focus-visible, summary:focus-visible {
+    outline: 3px solid var(--luz-forte);
+    outline-offset: 3px;
+  }
+
+  /* link escondido que aparece quando aperta Tab */
+  .lm-pular {
+    position: absolute; left: -9999px; top: 8px; z-index: 1000;
+    background: var(--tinta); color: #fff; padding: 10px 16px; border-radius: 8px;
+  }
+  .lm-pular:focus { left: 8px; }
+
+  /* animação dos blocos aparecendo quando rola a página (o JS coloca a classe .visivel) */
+  @keyframes lm-subir {
+    from { opacity: 0; transform: translateY(18px); }
+    to { opacity: 1; transform: none; }
+  }
+  .js .lm-revela { opacity: 0; }
+  .js .lm-revela.visivel { animation: lm-subir .6s ease-out forwards; }
+
+  /* se a pessoa pediu menos animação no sistema, respeita */
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .js .lm-revela { opacity: 1; }
+    .js .lm-revela.visivel { animation: none; }
+  }
+
+  /* menu com rolagem lateral no celular, sem barra aparecendo */
+  .lm-menu { scrollbar-width: none; }
+  .lm-menu::-webkit-scrollbar { display: none; }
+
+  /* botão flutuante do WhatsApp (criado pelo JS) */
+  .lm-zap {
+    position: fixed; right: 18px; bottom: 64px; z-index: 50; /* 64px pra não ficar em cima do selo do Webflow */
+    display: flex; align-items: center; gap: 8px;
+    background: #1f9d55; color: #fff; text-decoration: none; font-weight: 600;
+    padding: 12px 18px; border-radius: 999px; box-shadow: 0 6px 18px rgba(0,0,0,.18);
+  }
+  .lm-zap:hover { background: #17834a; }
+  @media (max-width: 479px) { .lm-zap span { display: none; } .lm-zap { padding: 14px; } }
+</style>
+
+<p id="status-loja">status</p>
+<section id="assistente" style="padding:40px"><!-- Embed 2: assistente de triagem (seção #assistente) -->
+<!-- O cliente escreve o problema e o JS sugere o serviço, preço e prazo na hora. -->
+<!-- Depois ele pode mandar pro formulário de orçamento, que vai pro Zapier (AI by Zapier). -->
+<div class="lmA">
+  <form class="lmA-form" id="lmA-form" novalidate>
+    <label for="lmA-aparelho" class="lmA-label">Qual é o aparelho?</label>
+    <select id="lmA-aparelho" class="lmA-campo">
+      <option value="Celular">Celular</option>
+      <option value="Notebook">Notebook</option>
+      <option value="Tablet">Tablet</option>
+      <option value="Outro">Outro</option>
+    </select>
+
+    <label for="lmA-texto" class="lmA-label">O que aconteceu com ele?</label>
+    <textarea id="lmA-texto" class="lmA-campo" rows="4" maxlength="600"
+      aria-describedby="lmA-ajuda lmA-erro"
+      placeholder="Ex.: meu celular caiu e a tela ficou com umas listras verdes, mas o touch ainda funciona"></textarea>
+    <p id="lmA-ajuda" class="lmA-ajuda">Pode escrever do seu jeito, não precisa saber o nome da peça.</p>
+    <p id="lmA-erro" class="lmA-erro" role="alert"></p>
+
+    <div class="lmA-exemplos" aria-label="Exemplos prontos">
+      <span>Sem ideia? Testa um desses:</span>
+      <button type="button" class="lmA-chip" data-ap="Celular" data-tx="Deixei cair na piscina e agora a tela não acende">Caiu na água</button>
+      <button type="button" class="lmA-chip" data-ap="Notebook" data-tx="Meu notebook tá muito lento e esquenta demais, a ventoinha faz barulho">Notebook lento</button>
+      <button type="button" class="lmA-chip" data-ap="Celular" data-tx="A bateria acaba antes do almoço e o celular desliga sozinho com 20%">Bateria fraca</button>
+    </div>
+
+    <button type="submit" class="lmA-botao">Analisar meu problema</button>
+  </form>
+
+  <div id="lmA-resultado" class="lmA-resultado" aria-live="polite"></div>
+</div>
+
+<style>
+  .lmA { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
+  .lmA-form, .lmA-resultado { background: #fff; border: 1px solid var(--borda); border-radius: 16px; padding: 24px; }
+  .lmA-label { display: block; font-weight: 600; margin: 0 0 6px; }
+  .lmA-campo { width: 100%; box-sizing: border-box; font: inherit; padding: 12px; border: 1px solid #bdb8aa; border-radius: 10px; margin-bottom: 14px; background: #fff; color: var(--texto); }
+  .lmA-campo:focus { border-color: var(--tinta); }
+  textarea.lmA-campo { resize: vertical; margin-bottom: 4px; }
+  .lmA-ajuda { font-size: 14px; color: var(--suave); margin: 0 0 6px; }
+  .lmA-erro { color: var(--vermelho); font-size: 14px; min-height: 1.2em; margin: 0 0 8px; }
+  .lmA-exemplos { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: 14px; color: var(--suave); margin-bottom: 18px; }
+  .lmA-chip { font: inherit; font-size: 14px; border: 1px solid var(--borda); background: var(--papel); color: var(--texto); padding: 6px 12px; border-radius: 999px; cursor: pointer; }
+  .lmA-chip:hover { border-color: var(--tinta); }
+  .lmA-botao { font: inherit; font-weight: 600; width: 100%; padding: 14px; border: 0; border-radius: 10px; background: var(--tinta); color: #fff; cursor: pointer; }
+  .lmA-botao:hover { background: #262e4d; }
+  .lmA-vazio { color: var(--suave); margin: 0; }
+  .lmA-resultado h3 { margin: 4px 0 10px; font-size: 24px; }
+  .lmA-tag { display: inline-block; font-size: 13px; font-weight: 600; padding: 4px 10px; border-radius: 999px; }
+  .lmA-tag.baixa { background: #e3f3e8; color: var(--verde); }
+  .lmA-tag.media { background: #fff2cc; color: #7a5600; }
+  .lmA-tag.alta { background: #fde4e1; color: var(--vermelho); }
+  .lmA-dados { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 14px 0; }
+  .lmA-dados div { background: var(--papel); border-radius: 10px; padding: 10px 12px; }
+  .lmA-dados small { display: block; color: var(--suave); font-size: 13px; }
+  .lmA-dados strong { font-size: 16px; }
+  .lmA-dica { border-left: 4px solid var(--luz); padding: 6px 0 6px 12px; margin: 0 0 16px; }
+  .lmA-obs { font-size: 13px; color: var(--suave); margin: 12px 0 0; }
+  .lmA-acao { font: inherit; display: inline-block; font-weight: 600; padding: 12px 18px; border-radius: 10px; background: var(--luz); color: var(--tinta); text-decoration: none; border: 0; cursor: pointer; }
+  .lmA-acao:hover { background: var(--luz-forte); }
+  @media (max-width: 767px) {
+    .lmA { grid-template-columns: 1fr; }
+    .lmA-dados { grid-template-columns: 1fr; }
+  }
+</style>
+
+<script>
+(function () {
+  // tabela de serviços da Luminus. As "palavras" são o que o cliente costuma escrever
+  // (sem acento, porque eu tiro os acentos do texto antes de comparar)
+  var SERVICOS = [
+    { id: 'tela', nome: 'Troca de tela', preco: 'R$ 180 a R$ 650', prazo: 'No mesmo dia',
+      palavras: ['tela', 'display', 'trinc', 'rachad', 'listra', 'mancha', 'touch', 'vidro', 'pixel', 'imagem'],
+      dica: 'Se o touch ainda funciona, coloca uma película por cima pra não cortar o dedo e faz backup das fotos.' },
+    { id: 'bateria', nome: 'Troca de bateria', preco: 'R$ 120 a R$ 350', prazo: 'Cerca de 1 hora',
+      palavras: ['bateria', 'descarreg', 'desliga sozinho', 'estuf', 'inchad', 'inchou', 'dura pouco', 'acaba rapido', 'porcentagem', '%'],
+      dica: 'Se a bateria estiver estufada (a tampa levantando), para de carregar e traz logo, porque é perigoso.' },
+    { id: 'conector', nome: 'Conector de carga', preco: 'R$ 90 a R$ 220', prazo: 'No mesmo dia',
+      palavras: ['nao carrega', 'carregar', 'carregador', 'conector', 'entrada', 'cabo', 'mau contato', 'so carrega'],
+      dica: 'Antes de vir, testa outro cabo e outra tomada. Às vezes é só sujeira na entrada.' },
+    { id: 'molhado', nome: 'Aparelho molhado', preco: 'R$ 150 a R$ 380', prazo: '2 a 3 dias, com laudo',
+      palavras: ['molh', 'agua', 'piscina', 'chuva', 'privada', 'umid', 'oxid', 'cafe', 'derrubei'],
+      dica: 'Desliga o aparelho agora e não tenta carregar. Arroz não resolve. Quanto antes trouxer, maior a chance de salvar.' },
+    { id: 'formatacao', nome: 'Formatação e otimização', preco: 'R$ 120 a R$ 180', prazo: '1 dia útil, com backup',
+      palavras: ['lento', 'trava', 'virus', 'formatar', 'formatacao', 'windows', 'demora', 'propaganda', 'nao abre', 'tela azul'],
+      dica: 'Separa o que você não pode perder (fotos, trabalhos). A gente faz backup, mas é bom saber o que é importante.' },
+    { id: 'limpeza', nome: 'Limpeza interna e pasta térmica', preco: 'R$ 130 a R$ 200', prazo: '1 dia útil',
+      palavras: ['esquent', 'quente', 'superaquec', 'ventoinha', 'barulho', 'cooler', 'poeira', 'desliga quando'],
+      dica: 'Enquanto isso, usa o notebook numa superfície dura (nada de cama ou sofá) pra não tampar a ventilação.' }
+  ];
+
+  // quando não dá pra saber pelo texto
+  var DIAGNOSTICO = { id: 'diagnostico', nome: 'Diagnóstico na loja', preco: 'Grátis', prazo: 'Até 24 horas',
+    dica: 'Traz o aparelho que a gente abre e te passa o orçamento certinho antes de fazer qualquer coisa.' };
+
+  var form = document.getElementById('lmA-form');
+  var campoTexto = document.getElementById('lmA-texto');
+  var campoAparelho = document.getElementById('lmA-aparelho');
+  var caixaErro = document.getElementById('lmA-erro');
+  var resultado = document.getElementById('lmA-resultado');
+
+  // tira acento e deixa minúsculo, assim "Água" e "agua" contam igual
+  function normalizar(texto) {
+    return texto.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+  }
+
+  function analisar(aparelho, texto) {
+    var t = normalizar(texto);
+    var melhor = null, melhorPontos = 0;
+
+    SERVICOS.forEach(function (s) {
+      var pontos = 0;
+      s.palavras.forEach(function (p) { if (t.indexOf(p) !== -1) pontos++; });
+      // ajuste pelo tipo de aparelho: formatação e limpeza quase sempre é notebook
+      if (pontos > 0 && aparelho === 'Notebook' && (s.id === 'formatacao' || s.id === 'limpeza')) pontos += 0.5;
+      if (pontos > melhorPontos) { melhorPontos = pontos; melhor = s; }
+    });
+
+    // água sempre ganha, porque é o caso mais urgente
+    if (t.match(/molh|agua|piscina|chuva|privada|derrubei/)) melhor = SERVICOS[3];
+
+    var servico = melhor || DIAGNOSTICO;
+
+    // urgência simples por regra
+    var urgencia = 'baixa';
+    if (servico.id === 'molhado' || t.match(/estuf|inchad|inchou|fumaca|cheiro de queimado/)) urgencia = 'alta';
+    else if (t.match(/nao liga|apagou|nao acende|desliga|trabalho|urgente/) || servico.id === 'tela') urgencia = 'media';
+
+    return { servico: servico, urgencia: urgencia, aparelho: aparelho, texto: texto.trim() };
+  }
+
+  // cria um elemento com texto (uso textContent pra não injetar HTML do usuário na página)
+  function el(tag, classe, texto) {
+    var e = document.createElement(tag);
+    if (classe) e.className = classe;
+    if (texto) e.textContent = texto;
+    return e;
+  }
+
+  function mostrar(r) {
+    var nomesUrgencia = { baixa: 'Urgência baixa', media: 'Urgência média', alta: 'Urgência alta' };
+    resultado.innerHTML = '';
+
+    resultado.appendChild(el('span', 'lmA-tag ' + r.urgencia, nomesUrgencia[r.urgencia]));
+    resultado.appendChild(el('h3', '', r.servico.nome));
+
+    var dados = el('div', 'lmA-dados');
+    [['Faixa de preço', r.servico.preco], ['Prazo', r.servico.prazo]].forEach(function (par) {
+      var d = el('div');
+      d.appendChild(el('small', '', par[0]));
+      d.appendChild(el('strong', '', par[1]));
+      dados.appendChild(d);
+    });
+    resultado.appendChild(dados);
+    resultado.appendChild(el('p', 'lmA-dica', r.servico.dica));
+
+    var botao = el('button', 'lmA-acao', 'Quero o orçamento disso');
+    botao.type = 'button';
+    botao.addEventListener('click', function () { levarProFormulario(r); });
+    resultado.appendChild(botao);
+
+    resultado.appendChild(el('p', 'lmA-obs',
+      'É uma estimativa automática. O valor final a gente confirma depois de olhar o aparelho, e nada é feito sem você aprovar.'));
+  }
+
+  // preenche o formulário de orçamento do Webflow com o que o assistente entendeu
+  function levarProFormulario(r) {
+    var preencher = function (id, valor) {
+      var c = document.getElementById(id);
+      if (c) c.value = valor;
+    };
+    preencher('campo-aparelho', r.aparelho);
+    preencher('campo-descricao', r.texto);
+    preencher('campo-servico', r.servico.nome);
+    preencher('campo-triagem', r.servico.id + ' | urgencia ' + r.urgencia);
+
+    var secao = document.getElementById('orcamento');
+    if (secao) secao.scrollIntoView({ behavior: 'smooth' });
+    var nome = document.getElementById('campo-nome');
+    if (nome) setTimeout(function () { nome.focus({ preventScroll: true }); }, 500);
+  }
+
+  form.addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    var texto = campoTexto.value;
+    if (texto.trim().length < 8) {
+      caixaErro.textContent = 'Escreve um pouquinho mais sobre o problema (pelo menos uma frase).';
+      campoTexto.setAttribute('aria-invalid', 'true');
+      campoTexto.focus();
+      return;
+    }
+    caixaErro.textContent = '';
+    campoTexto.removeAttribute('aria-invalid');
+    mostrar(analisar(campoAparelho.value, texto));
+  });
+
+  // botões de exemplo: preenchem e já analisam
+  document.querySelectorAll('.lmA-chip').forEach(function (chip) {
+    chip.addEventListener('click', function () {
+      campoAparelho.value = chip.getAttribute('data-ap');
+      campoTexto.value = chip.getAttribute('data-tx');
+      form.requestSubmit();
+    });
+  });
+
+  // mensagem inicial do lado direito
+  resultado.appendChild(el('p', 'lmA-vazio', 'O resultado aparece aqui: qual serviço resolve, quanto custa mais ou menos e quanto tempo demora.'));
+})();
+</script>
+</section>
+<section id="duvidas" style="padding:40px"><!-- Embed 3: perguntas frequentes (seção #duvidas) -->
+<!-- Usei <details> e <summary> porque já abre e fecha sozinho e funciona no teclado, sem precisar de JS -->
+<div class="lmF">
+  <details class="lmF-item">
+    <summary>O orçamento é pago?</summary>
+    <p>Não. O diagnóstico é grátis e você só paga se aprovar o conserto. Se não quiser fazer, devolvemos o aparelho do jeito que chegou.</p>
+  </details>
+  <details class="lmF-item">
+    <summary>Quanto tempo demora o conserto?</summary>
+    <p>Troca de tela, bateria e conector normalmente fica pronta no mesmo dia. Aparelho molhado e notebook levam de 1 a 3 dias, porque precisa testar com calma.</p>
+  </details>
+  <details class="lmF-item">
+    <summary>Tem garantia?</summary>
+    <p>Tem, 90 dias em peça e serviço. A garantia vale para o defeito que foi consertado e vem escrita na nota.</p>
+  </details>
+  <details class="lmF-item">
+    <summary>Vou perder minhas fotos e arquivos?</summary>
+    <p>Na maioria dos consertos não mexemos nos seus dados. Quando precisa formatar, fazemos backup antes e avisamos tudo.</p>
+  </details>
+  <details class="lmF-item">
+    <summary>Vocês buscam o aparelho em casa?</summary>
+    <p>Sim, no bairro e em bairros vizinhos, com taxa de R$ 15. Para notebook a busca é grátis acima de R$ 200 de serviço.</p>
+  </details>
+  <details class="lmF-item">
+    <summary>Quais formas de pagamento vocês aceitam?</summary>
+    <p>Pix, débito e crédito em até 6x sem juros.</p>
+  </details>
+</div>
+
+<style>
+  .lmF { max-width: 760px; margin: 0 auto; }
+  .lmF-item { background: #fff; border: 1px solid var(--borda); border-radius: 12px; margin-bottom: 10px; }
+  .lmF-item summary {
+    cursor: pointer; list-style: none; font-weight: 600; padding: 18px 48px 18px 20px; position: relative;
+  }
+  .lmF-item summary::-webkit-details-marker { display: none; }
+  /* sinal de + que vira x quando abre */
+  .lmF-item summary::after {
+    content: '+'; position: absolute; right: 20px; top: 50%; transform: translateY(-50%);
+    font-size: 24px; line-height: 1; transition: transform .2s;
+  }
+  .lmF-item[open] summary::after { transform: translateY(-50%) rotate(45deg); }
+  .lmF-item p { margin: 0; padding: 0 20px 18px; color: var(--suave); line-height: 1.6; }
+  @media (prefers-reduced-motion: reduce) { .lmF-item summary::after { transition: none; } }
+</style>
+</section>
+<section id="orcamento" style="padding:40px">
+<form id="form-orcamento">
+<label for="campo-nome">Seu nome</label><input class="w-input" id="campo-nome" name="Nome">
+<label for="campo-email">E-mail</label><input class="w-input" id="campo-email" name="Email" type="email">
+<!-- Embed 5: fica DENTRO do formulário nativo do Webflow, depois dos campos Nome e E-mail -->
+<!-- Os campos que eu criei pelo painel saíam com nome "Field 3" e texto "Example Text" no site publicado, -->
+<!-- então fiz esses na mão. O Webflow envia junto qualquer campo com "name" que esteja dentro do form. -->
+<label for="campo-whatsapp" class="lmO-label">WhatsApp</label>
+<input type="tel" id="campo-whatsapp" name="WhatsApp" data-name="WhatsApp" class="w-input" required
+  autocomplete="tel" inputmode="numeric" placeholder="(11) 91234-5678" maxlength="15">
+
+<label for="campo-aparelho" class="lmO-label">Aparelho</label>
+<select id="campo-aparelho" name="Aparelho" data-name="Aparelho" class="w-input lmO-select" required>
+  <option value="Celular">Celular</option>
+  <option value="Notebook">Notebook</option>
+  <option value="Tablet">Tablet</option>
+  <option value="Outro">Outro</option>
+</select>
+
+<label for="campo-servico" class="lmO-label">Serviço (se já souber)</label>
+<input type="text" id="campo-servico" name="Servico" data-name="Servico" class="w-input"
+  placeholder="Ex.: troca de tela" maxlength="100">
+
+<label for="campo-descricao" class="lmO-label">O que aconteceu com o aparelho?</label>
+<textarea id="campo-descricao" name="Descricao" data-name="Descricao" class="w-input" required maxlength="800"
+  placeholder="Conta do seu jeito: quando começou, se caiu, se molhou..."></textarea>
+
+<!-- campo escondido: o assistente coloca aqui o que ele achou (serviço + urgência) -->
+<input type="hidden" id="campo-triagem" name="Triagem do site" data-name="Triagem do site" value="nao usou o assistente">
+
+<style>
+  /* deixando os campos padrão do Webflow com a cara do site */
+  #form-orcamento label, .lmO-label { display: block; font-weight: 600; margin-bottom: 6px; color: var(--texto); }
+  #form-orcamento .w-input, #form-orcamento .w-select {
+    height: auto; min-height: 48px; padding: 12px; font: inherit; font-size: 16px;
+    border: 1px solid #bdb8aa; border-radius: 10px; margin-bottom: 16px; color: var(--texto); background: #fff;
+  }
+  #form-orcamento textarea.w-input { min-height: 120px; resize: vertical; }
+  #form-orcamento .w-input:focus { border-color: var(--tinta); }
+  #form-orcamento .w-input::placeholder { color: #8a8f9e; }
+  #form-orcamento .w-button {
+    width: 100%; padding: 15px; border-radius: 10px; font-weight: 600; font-size: 16px;
+    background: var(--tinta); color: #fff;
+  }
+  #form-orcamento .w-button:hover { background: #262e4d; }
+  .lmO-select { appearance: auto; }
+  .w-form-done { background: #e3f3e8; color: var(--verde); border-radius: 12px; padding: 24px; font-weight: 600; }
+  .w-form-fail { background: #fde4e1; color: var(--vermelho); border-radius: 12px; }
+</style>
+
+</form>
+</section>
+<p>© <span id="ano-atual"></span></p>
+<!-- Embed 4: scripts gerais, fica no fim do body -->
+<script>
+(function () {
+  // 1) Mostra se a loja está aberta agora (seg a sex 9h-19h, sáb 9h-14h, horário de Brasília)
+  var status = document.getElementById('status-loja');
+  if (status) {
+    var partes = new Intl.DateTimeFormat('pt-BR', {
+      timeZone: 'America/Sao_Paulo', weekday: 'short', hour: 'numeric', minute: 'numeric', hour12: false
+    }).formatToParts(new Date());
+    var dia = '', hora = 0, minuto = 0;
+    partes.forEach(function (p) {
+      if (p.type === 'weekday') dia = p.value.replace('.', '').toLowerCase();
+      if (p.type === 'hour') hora = parseInt(p.value, 10);
+      if (p.type === 'minute') minuto = parseInt(p.value, 10);
+    });
+    var agora = hora + minuto / 60;
+    var aberto = false;
+    if (['seg', 'ter', 'qua', 'qui', 'sex'].indexOf(dia) !== -1) aberto = agora >= 9 && agora < 19;
+    if (dia === 'sab') aberto = agora >= 9 && agora < 14;
+
+    status.textContent = aberto ? 'Aberto agora · atendemos até ' + (dia === 'sab' ? '14h' : '19h')
+                                : 'Fechado agora · mas o assistente do site funciona 24h';
+    status.classList.add(aberto ? 'lm-aberto' : 'lm-fechado');
+  }
+
+  // 2) Animação de entrada: quando o bloco aparece na tela, ganha a classe .visivel
+  var blocos = document.querySelectorAll('.lm-revela');
+  if ('IntersectionObserver' in window) {
+    var obs = new IntersectionObserver(function (itens) {
+      itens.forEach(function (item) {
+        if (item.isIntersecting) {
+          item.target.classList.add('visivel');
+          obs.unobserve(item.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    blocos.forEach(function (b) { obs.observe(b); });
+  } else {
+    blocos.forEach(function (b) { b.classList.add('visivel'); });
+  }
+
+  // 3) Botão flutuante do WhatsApp com mensagem pronta
+  // (empresa fictícia, então não tem número. Numa loja de verdade é só colocar aqui, ex: '5511999999999')
+  var NUMERO_WHATSAPP = '';
+  var msg = encodeURIComponent('Oi, Luminus! Vim pelo site e queria um orçamento.');
+  var zap = document.createElement('a');
+  zap.className = 'lm-zap';
+  zap.href = 'https://wa.me/' + NUMERO_WHATSAPP + '?text=' + msg;
+  zap.target = '_blank';
+  zap.rel = 'noopener';
+  zap.setAttribute('aria-label', 'Conversar pelo WhatsApp (abre em nova aba)');
+  zap.innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6a2.7 2.7 0 0 0 1.8-1.2 2.2 2.2 0 0 0 .1-1.2c0-.2-.2-.2-.5-.4z"/></svg><span>WhatsApp</span>';
+  document.body.appendChild(zap);
+
+  // 4) Máscara no campo de WhatsApp do formulário: (11) 91234-5678
+  var tel = document.getElementById('campo-whatsapp');
+  if (tel) {
+    tel.addEventListener('input', function () {
+      var n = tel.value.replace(/\D/g, '').slice(0, 11);
+      var f = n;
+      if (n.length > 2) f = '(' + n.slice(0, 2) + ') ' + n.slice(2);
+      if (n.length > 7) f = '(' + n.slice(0, 2) + ') ' + n.slice(2, 7) + '-' + n.slice(7);
+      tel.value = f;
+    });
+  }
+
+  // 5) Ano atual no rodapé
+  var ano = document.getElementById('ano-atual');
+  if (ano) ano.textContent = new Date().getFullYear();
+})();
+</script>
+<style>
+  .lm-aberto::before, .lm-fechado::before {
+    content: ''; display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 8px; vertical-align: middle;
+  }
+  .lm-aberto::before { background: #2fbf71; }
+  .lm-fechado::before { background: #c9c3b3; }
+</style>
+
+</body>
+</html>

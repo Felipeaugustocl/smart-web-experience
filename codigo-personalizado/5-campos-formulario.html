@@ -1,0 +1,45 @@
+<!-- Embed 5: fica DENTRO do formulário nativo do Webflow, depois dos campos Nome e E-mail -->
+<!-- Os campos que eu criei pelo painel saíam com nome "Field 3" e texto "Example Text" no site publicado, -->
+<!-- então fiz esses na mão. O Webflow envia junto qualquer campo com "name" que esteja dentro do form. -->
+<label for="campo-whatsapp" class="lmO-label">WhatsApp</label>
+<input type="tel" id="campo-whatsapp" name="WhatsApp" data-name="WhatsApp" class="w-input" required
+  autocomplete="tel" inputmode="numeric" placeholder="(11) 91234-5678" maxlength="15">
+
+<label for="campo-aparelho" class="lmO-label">Aparelho</label>
+<select id="campo-aparelho" name="Aparelho" data-name="Aparelho" class="w-input lmO-select" required>
+  <option value="Celular">Celular</option>
+  <option value="Notebook">Notebook</option>
+  <option value="Tablet">Tablet</option>
+  <option value="Outro">Outro</option>
+</select>
+
+<label for="campo-servico" class="lmO-label">Serviço (se já souber)</label>
+<input type="text" id="campo-servico" name="Servico" data-name="Servico" class="w-input"
+  placeholder="Ex.: troca de tela" maxlength="100">
+
+<label for="campo-descricao" class="lmO-label">O que aconteceu com o aparelho?</label>
+<textarea id="campo-descricao" name="Descricao" data-name="Descricao" class="w-input" required maxlength="800"
+  placeholder="Conta do seu jeito: quando começou, se caiu, se molhou..."></textarea>
+
+<!-- campo escondido: o assistente coloca aqui o que ele achou (serviço + urgência) -->
+<input type="hidden" id="campo-triagem" name="Triagem do site" data-name="Triagem do site" value="nao usou o assistente">
+
+<style>
+  /* deixando os campos padrão do Webflow com a cara do site */
+  #form-orcamento label, .lmO-label { display: block; font-weight: 600; margin-bottom: 6px; color: var(--texto); }
+  #form-orcamento .w-input, #form-orcamento .w-select {
+    height: auto; min-height: 48px; padding: 12px; font: inherit; font-size: 16px;
+    border: 1px solid #bdb8aa; border-radius: 10px; margin-bottom: 16px; color: var(--texto); background: #fff;
+  }
+  #form-orcamento textarea.w-input { min-height: 120px; resize: vertical; }
+  #form-orcamento .w-input:focus { border-color: var(--tinta); }
+  #form-orcamento .w-input::placeholder { color: #8a8f9e; }
+  #form-orcamento .w-button {
+    width: 100%; padding: 15px; border-radius: 10px; font-weight: 600; font-size: 16px;
+    background: var(--tinta); color: #fff;
+  }
+  #form-orcamento .w-button:hover { background: #262e4d; }
+  .lmO-select { appearance: auto; }
+  .w-form-done { background: #e3f3e8; color: var(--verde); border-radius: 12px; padding: 24px; font-weight: 600; }
+  .w-form-fail { background: #fde4e1; color: var(--vermelho); border-radius: 12px; }
+</style>

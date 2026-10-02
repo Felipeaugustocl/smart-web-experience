@@ -1,0 +1,210 @@
+<!-- Embed 2: assistente de triagem (seção #assistente) -->
+<!-- O cliente escreve o problema e o JS sugere o serviço, preço e prazo na hora. -->
+<!-- Depois ele pode mandar pro formulário de orçamento, que vai pro Zapier (AI by Zapier). -->
+<div class="lmA">
+  <form class="lmA-form" id="lmA-form" novalidate>
+    <label for="lmA-aparelho" class="lmA-label">Qual é o aparelho?</label>
+    <select id="lmA-aparelho" class="lmA-campo">
+      <option value="Celular">Celular</option>
+      <option value="Notebook">Notebook</option>
+      <option value="Tablet">Tablet</option>
+      <option value="Outro">Outro</option>
+    </select>
+
+    <label for="lmA-texto" class="lmA-label">O que aconteceu com ele?</label>
+    <textarea id="lmA-texto" class="lmA-campo" rows="4" maxlength="600"
+      aria-describedby="lmA-ajuda lmA-erro"
+      placeholder="Ex.: meu celular caiu e a tela ficou com umas listras verdes, mas o touch ainda funciona"></textarea>
+    <p id="lmA-ajuda" class="lmA-ajuda">Pode escrever do seu jeito, não precisa saber o nome da peça.</p>
+    <p id="lmA-erro" class="lmA-erro" role="alert"></p>
+
+    <div class="lmA-exemplos" aria-label="Exemplos prontos">
+      <span>Sem ideia? Testa um desses:</span>
+      <button type="button" class="lmA-chip" data-ap="Celular" data-tx="Deixei cair na piscina e agora a tela não acende">Caiu na água</button>
+      <button type="button" class="lmA-chip" data-ap="Notebook" data-tx="Meu notebook tá muito lento e esquenta demais, a ventoinha faz barulho">Notebook lento</button>
+      <button type="button" class="lmA-chip" data-ap="Celular" data-tx="A bateria acaba antes do almoço e o celular desliga sozinho com 20%">Bateria fraca</button>
+    </div>
+
+    <button type="submit" class="lmA-botao">Analisar meu problema</button>
+  </form>
+
+  <div id="lmA-resultado" class="lmA-resultado" aria-live="polite"></div>
+</div>
+
+<style>
+  .lmA { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
+  .lmA-form, .lmA-resultado { background: #fff; border: 1px solid var(--borda); border-radius: 16px; padding: 24px; }
+  .lmA-label { display: block; font-weight: 600; margin: 0 0 6px; }
+  .lmA-campo { width: 100%; box-sizing: border-box; font: inherit; padding: 12px; border: 1px solid #bdb8aa; border-radius: 10px; margin-bottom: 14px; background: #fff; color: var(--texto); }
+  .lmA-campo:focus { border-color: var(--tinta); }
+  textarea.lmA-campo { resize: vertical; margin-bottom: 4px; }
+  .lmA-ajuda { font-size: 14px; color: var(--suave); margin: 0 0 6px; }
+  .lmA-erro { color: var(--vermelho); font-size: 14px; min-height: 1.2em; margin: 0 0 8px; }
+  .lmA-exemplos { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: 14px; color: var(--suave); margin-bottom: 18px; }
+  .lmA-chip { font: inherit; font-size: 14px; border: 1px solid var(--borda); background: var(--papel); color: var(--texto); padding: 6px 12px; border-radius: 999px; cursor: pointer; }
+  .lmA-chip:hover { border-color: var(--tinta); }
+  .lmA-botao { font: inherit; font-weight: 600; width: 100%; padding: 14px; border: 0; border-radius: 10px; background: var(--tinta); color: #fff; cursor: pointer; }
+  .lmA-botao:hover { background: #262e4d; }
+  .lmA-vazio { color: var(--suave); margin: 0; }
+  .lmA-resultado h3 { margin: 4px 0 10px; font-size: 24px; }
+  .lmA-tag { display: inline-block; font-size: 13px; font-weight: 600; padding: 4px 10px; border-radius: 999px; }
+  .lmA-tag.baixa { background: #e3f3e8; color: var(--verde); }
+  .lmA-tag.media { background: #fff2cc; color: #7a5600; }
+  .lmA-tag.alta { background: #fde4e1; color: var(--vermelho); }
+  .lmA-dados { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 14px 0; }
+  .lmA-dados div { background: var(--papel); border-radius: 10px; padding: 10px 12px; }
+  .lmA-dados small { display: block; color: var(--suave); font-size: 13px; }
+  .lmA-dados strong { font-size: 16px; }
+  .lmA-dica { border-left: 4px solid var(--luz); padding: 6px 0 6px 12px; margin: 0 0 16px; }
+  .lmA-obs { font-size: 13px; color: var(--suave); margin: 12px 0 0; }
+  .lmA-acao { font: inherit; display: inline-block; font-weight: 600; padding: 12px 18px; border-radius: 10px; background: var(--luz); color: var(--tinta); text-decoration: none; border: 0; cursor: pointer; }
+  .lmA-acao:hover { background: var(--luz-forte); }
+  @media (max-width: 767px) {
+    .lmA { grid-template-columns: 1fr; }
+    .lmA-dados { grid-template-columns: 1fr; }
+  }
+</style>
+
+<script>
+(function () {
+  // tabela de serviços da Luminus. As "palavras" são o que o cliente costuma escrever
+  // (sem acento, porque eu tiro os acentos do texto antes de comparar)
+  var SERVICOS = [
+    { id: 'tela', nome: 'Troca de tela', preco: 'R$ 180 a R$ 650', prazo: 'No mesmo dia',
+      palavras: ['tela', 'display', 'trinc', 'rachad', 'listra', 'mancha', 'touch', 'vidro', 'pixel', 'imagem'],
+      dica: 'Se o touch ainda funciona, coloca uma película por cima pra não cortar o dedo e faz backup das fotos.' },
+    { id: 'bateria', nome: 'Troca de bateria', preco: 'R$ 120 a R$ 350', prazo: 'Cerca de 1 hora',
+      palavras: ['bateria', 'descarreg', 'desliga sozinho', 'estuf', 'inchad', 'inchou', 'dura pouco', 'acaba rapido', 'porcentagem', '%'],
+      dica: 'Se a bateria estiver estufada (a tampa levantando), para de carregar e traz logo, porque é perigoso.' },
+    { id: 'conector', nome: 'Conector de carga', preco: 'R$ 90 a R$ 220', prazo: 'No mesmo dia',
+      palavras: ['nao carrega', 'carregar', 'carregador', 'conector', 'entrada', 'cabo', 'mau contato', 'so carrega'],
+      dica: 'Antes de vir, testa outro cabo e outra tomada. Às vezes é só sujeira na entrada.' },
+    { id: 'molhado', nome: 'Aparelho molhado', preco: 'R$ 150 a R$ 380', prazo: '2 a 3 dias, com laudo',
+      palavras: ['molh', 'agua', 'piscina', 'chuva', 'privada', 'umid', 'oxid', 'cafe', 'derrubei'],
+      dica: 'Desliga o aparelho agora e não tenta carregar. Arroz não resolve. Quanto antes trouxer, maior a chance de salvar.' },
+    { id: 'formatacao', nome: 'Formatação e otimização', preco: 'R$ 120 a R$ 180', prazo: '1 dia útil, com backup',
+      palavras: ['lento', 'trava', 'virus', 'formatar', 'formatacao', 'windows', 'demora', 'propaganda', 'nao abre', 'tela azul'],
+      dica: 'Separa o que você não pode perder (fotos, trabalhos). A gente faz backup, mas é bom saber o que é importante.' },
+    { id: 'limpeza', nome: 'Limpeza interna e pasta térmica', preco: 'R$ 130 a R$ 200', prazo: '1 dia útil',
+      palavras: ['esquent', 'quente', 'superaquec', 'ventoinha', 'barulho', 'cooler', 'poeira', 'desliga quando'],
+      dica: 'Enquanto isso, usa o notebook numa superfície dura (nada de cama ou sofá) pra não tampar a ventilação.' }
+  ];
+
+  // quando não dá pra saber pelo texto
+  var DIAGNOSTICO = { id: 'diagnostico', nome: 'Diagnóstico na loja', preco: 'Grátis', prazo: 'Até 24 horas',
+    dica: 'Traz o aparelho que a gente abre e te passa o orçamento certinho antes de fazer qualquer coisa.' };
+
+  var form = document.getElementById('lmA-form');
+  var campoTexto = document.getElementById('lmA-texto');
+  var campoAparelho = document.getElementById('lmA-aparelho');
+  var caixaErro = document.getElementById('lmA-erro');
+  var resultado = document.getElementById('lmA-resultado');
+
+  // tira acento e deixa minúsculo, assim "Água" e "agua" contam igual
+  function normalizar(texto) {
+    return texto.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+  }
+
+  function analisar(aparelho, texto) {
+    var t = normalizar(texto);
+    var melhor = null, melhorPontos = 0;
+
+    SERVICOS.forEach(function (s) {
+      var pontos = 0;
+      s.palavras.forEach(function (p) { if (t.indexOf(p) !== -1) pontos++; });
+      // ajuste pelo tipo de aparelho: formatação e limpeza quase sempre é notebook
+      if (pontos > 0 && aparelho === 'Notebook' && (s.id === 'formatacao' || s.id === 'limpeza')) pontos += 0.5;
+      if (pontos > melhorPontos) { melhorPontos = pontos; melhor = s; }
+    });
+
+    // água sempre ganha, porque é o caso mais urgente
+    if (t.match(/molh|agua|piscina|chuva|privada|derrubei/)) melhor = SERVICOS[3];
+
+    var servico = melhor || DIAGNOSTICO;
+
+    // urgência simples por regra
+    var urgencia = 'baixa';
+    if (servico.id === 'molhado' || t.match(/estuf|inchad|inchou|fumaca|cheiro de queimado/)) urgencia = 'alta';
+    else if (t.match(/nao liga|apagou|nao acende|desliga|trabalho|urgente/) || servico.id === 'tela') urgencia = 'media';
+
+    return { servico: servico, urgencia: urgencia, aparelho: aparelho, texto: texto.trim() };
+  }
+
+  // cria um elemento com texto (uso textContent pra não injetar HTML do usuário na página)
+  function el(tag, classe, texto) {
+    var e = document.createElement(tag);
+    if (classe) e.className = classe;
+    if (texto) e.textContent = texto;
+    return e;
+  }
+
+  function mostrar(r) {
+    var nomesUrgencia = { baixa: 'Urgência baixa', media: 'Urgência média', alta: 'Urgência alta' };
+    resultado.innerHTML = '';
+
+    resultado.appendChild(el('span', 'lmA-tag ' + r.urgencia, nomesUrgencia[r.urgencia]));
+    resultado.appendChild(el('h3', '', r.servico.nome));
+
+    var dados = el('div', 'lmA-dados');
+    [['Faixa de preço', r.servico.preco], ['Prazo', r.servico.prazo]].forEach(function (par) {
+      var d = el('div');
+      d.appendChild(el('small', '', par[0]));
+      d.appendChild(el('strong', '', par[1]));
+      dados.appendChild(d);
+    });
+    resultado.appendChild(dados);
+    resultado.appendChild(el('p', 'lmA-dica', r.servico.dica));
+
+    var botao = el('button', 'lmA-acao', 'Quero o orçamento disso');
+    botao.type = 'button';
+    botao.addEventListener('click', function () { levarProFormulario(r); });
+    resultado.appendChild(botao);
+
+    resultado.appendChild(el('p', 'lmA-obs',
+      'É uma estimativa automática. O valor final a gente confirma depois de olhar o aparelho, e nada é feito sem você aprovar.'));
+  }
+
+  // preenche o formulário de orçamento do Webflow com o que o assistente entendeu
+  function levarProFormulario(r) {
+    var preencher = function (id, valor) {
+      var c = document.getElementById(id);
+      if (c) c.value = valor;
+    };
+    preencher('campo-aparelho', r.aparelho);
+    preencher('campo-descricao', r.texto);
+    preencher('campo-servico', r.servico.nome);
+    preencher('campo-triagem', r.servico.id + ' | urgencia ' + r.urgencia);
+
+    var secao = document.getElementById('orcamento');
+    if (secao) secao.scrollIntoView({ behavior: 'smooth' });
+    var nome = document.getElementById('campo-nome');
+    if (nome) setTimeout(function () { nome.focus({ preventScroll: true }); }, 500);
+  }
+
+  form.addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    var texto = campoTexto.value;
+    if (texto.trim().length < 8) {
+      caixaErro.textContent = 'Escreve um pouquinho mais sobre o problema (pelo menos uma frase).';
+      campoTexto.setAttribute('aria-invalid', 'true');
+      campoTexto.focus();
+      return;
+    }
+    caixaErro.textContent = '';
+    campoTexto.removeAttribute('aria-invalid');
+    mostrar(analisar(campoAparelho.value, texto));
+  });
+
+  // botões de exemplo: preenchem e já analisam
+  document.querySelectorAll('.lmA-chip').forEach(function (chip) {
+    chip.addEventListener('click', function () {
+      campoAparelho.value = chip.getAttribute('data-ap');
+      campoTexto.value = chip.getAttribute('data-tx');
+      form.requestSubmit();
+    });
+  });
+
+  // mensagem inicial do lado direito
+  resultado.appendChild(el('p', 'lmA-vazio', 'O resultado aparece aqui: qual serviço resolve, quanto custa mais ou menos e quanto tempo demora.'));
+})();
+</script>

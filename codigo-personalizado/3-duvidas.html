@@ -1,0 +1,45 @@
+<!-- Embed 3: perguntas frequentes (seção #duvidas) -->
+<!-- Usei <details> e <summary> porque já abre e fecha sozinho e funciona no teclado, sem precisar de JS -->
+<div class="lmF">
+  <details class="lmF-item">
+    <summary>O orçamento é pago?</summary>
+    <p>Não. O diagnóstico é grátis e você só paga se aprovar o conserto. Se não quiser fazer, devolvemos o aparelho do jeito que chegou.</p>
+  </details>
+  <details class="lmF-item">
+    <summary>Quanto tempo demora o conserto?</summary>
+    <p>Troca de tela, bateria e conector normalmente fica pronta no mesmo dia. Aparelho molhado e notebook levam de 1 a 3 dias, porque precisa testar com calma.</p>
+  </details>
+  <details class="lmF-item">
+    <summary>Tem garantia?</summary>
+    <p>Tem, 90 dias em peça e serviço. A garantia vale para o defeito que foi consertado e vem escrita na nota.</p>
+  </details>
+  <details class="lmF-item">
+    <summary>Vou perder minhas fotos e arquivos?</summary>
+    <p>Na maioria dos consertos não mexemos nos seus dados. Quando precisa formatar, fazemos backup antes e avisamos tudo.</p>
+  </details>
+  <details class="lmF-item">
+    <summary>Vocês buscam o aparelho em casa?</summary>
+    <p>Sim, no bairro e em bairros vizinhos, com taxa de R$ 15. Para notebook a busca é grátis acima de R$ 200 de serviço.</p>
+  </details>
+  <details class="lmF-item">
+    <summary>Quais formas de pagamento vocês aceitam?</summary>
+    <p>Pix, débito e crédito em até 6x sem juros.</p>
+  </details>
+</div>
+
+<style>
+  .lmF { max-width: 760px; margin: 0 auto; }
+  .lmF-item { background: #fff; border: 1px solid var(--borda); border-radius: 12px; margin-bottom: 10px; }
+  .lmF-item summary {
+    cursor: pointer; list-style: none; font-weight: 600; padding: 18px 48px 18px 20px; position: relative;
+  }
+  .lmF-item summary::-webkit-details-marker { display: none; }
+  /* sinal de + que vira x quando abre */
+  .lmF-item summary::after {
+    content: '+'; position: absolute; right: 20px; top: 50%; transform: translateY(-50%);
+    font-size: 24px; line-height: 1; transition: transform .2s;
+  }
+  .lmF-item[open] summary::after { transform: translateY(-50%) rotate(45deg); }
+  .lmF-item p { margin: 0; padding: 0 20px 18px; color: var(--suave); line-height: 1.6; }
+  @media (prefers-reduced-motion: reduce) { .lmF-item summary::after { transition: none; } }
+</style>
