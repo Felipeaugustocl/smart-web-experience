@@ -6,7 +6,7 @@ Este é o trabalho da disciplina **Padrões Web para No Code e Low Code** (UniFE
 Aluno: Felipe Augusto Camargo Laosa
 
 - Site publicado: https://unifecaf-trabalho.webflow.io
-- Vídeo pitch: _(link do vídeo aqui)_
+- Vídeo pitch: https://www.youtube.com/watch?v=hNakCIi26gY
 
 ![Página inicial no desktop](prints/02-site-desktop-topo.png)
 
